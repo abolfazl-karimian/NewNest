@@ -8,7 +8,7 @@ public class Property {
         return url;
     }
 
-    public int getHashedUrl() {
-        return url.hashCode();
+    public int toHash() {
+        return toString().hashCode();
     }
 }

@@ -1,6 +1,7 @@
 package newnest.property;
 
 public class Apartment extends Property{
+    /*
     private int year;
     private int floor;
     private int credit;
@@ -94,4 +95,21 @@ public class Apartment extends Property{
     public void setDistrict(String district) {
         this.district = district;
     }
+
+    @Override
+    public String toString() {
+        return "Apartment{" +
+                "year=" + year +
+                ", floor=" + floor +
+                ", credit=" + credit +
+                ", rent=" + rent +
+                ", size=" + size +
+                ", bedroom=" + bedroom +
+                ", elevator=" + elevator +
+                ", parking=" + parking +
+                ", district='" + district + '\'' +
+                '}';
+    }
+*/
+
 }
