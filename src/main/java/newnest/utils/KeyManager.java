@@ -1,5 +1,6 @@
 package newnest.utils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,10 +8,11 @@ public class KeyManager {
     private final List<String> apiKeys;
     private int currentIndex;
 
-    public KeyManager() {
-        this.apiKeys = new ArrayList<>();
-        apiKeys.add("key1");
-        apiKeys.add("key2");
+    public KeyManager(String path) throws IOException {
+        ConfLoader keys = new ConfLoader(path);
+        this.apiKeys = new ArrayList<>(keys.getConfs().values());
+        System.out.println("Loaded " + apiKeys.size() + " API keys");
+        apiKeys.add("key3");
         this.currentIndex = 0;
     }
 
@@ -24,7 +26,7 @@ public class KeyManager {
         currentIndex = (currentIndex + 1) % apiKeys.size();
     }
 
-    public int getKMSize(){
+    public int getKMSize() {
         return apiKeys.size();
     }
 }

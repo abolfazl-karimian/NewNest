@@ -13,95 +13,34 @@ import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class DivarApartmentScraper extends Scraper {
 //    https://api.divar.ir/v1/open-platform/finder/post/
 //    Token : eyJhbGciOiJSUzI1NiIsImtpZCI6InByaXZhdGVfa2V5XzIiLCJ0eXAiOiJKV1QifQ.eyJhcHBfc2x1ZyI6InZpb2xldC1wZWF0LXN0b3JrIiwiYXVkIjoic2VydmljZXByb3ZpZGVycyIsImV4cCI6MTczNzI5MjI3NSwianRpIjoiZWMzYzljM2YtYTc0MC0xMWVmLTgxNDktYjJkOGE5MWQzMTFhIiwiaWF0IjoxNzMyMTA4Mjc1LCJpc3MiOiJkaXZhciIsInN1YiI6ImFwaWtleSJ9.vdEAGBkaqOgCoonEGHmUD7rx3H03qYRCJRoxhdc7i3wkkykqgwzE0FCOlgZC2OEyYVjsbMYDUzvcUBVamFMdTu0NUfgqUOZN9Xa0eJeYyJKcXBZvKLgc2YwaxzNUbGp_sNf6tCXFTu4qo4DiUS4KqPEYDVLJCKWNkMxWvV_dQbFcbCHmANDQapWzR8raroykpdNHk1jCCi3RxlJfipALo2XzOQOC0PrYPBU4wEx_T2Y9K5hMGtaWXPzYqE3DatpIFEkfuT62ma-dh5xnDpNyesT4p4eh3Dpt-ea88-t9vuuZqYo-YV3MXoyl_vml9jD14hhIzSEQ-YrR2Bnp0sVU2A
-//    {
-//    "city": "tehran",
-//    "category": "light",
-//    "districts": ["abshar", "nazi-abad"],
-//    "query": {
-//        "brand_model": {
-//            "value": ["Pride 111 EX", "MVM 110"]
-//        },
-//        "production-year": {
-//            "min": 1380,
-//            "max": 1398
-//        },
-//        "usage": {
-//            "max": 200000
-//        }
-//    }
-//}
-//
 //    https://github.com/divar-ir/kenar-docs/?tab=readme-ov-file
 //    https://github.com/divar-ir/kenar-docs/blob/master/finder/search_post.md
 //    https://github.com/divar-ir/kenar-docs/blob/master/finder/get_post.md
-
     private final String website = "Divar";
-    //    private final String endpoint = "https://divar.ir/s/tehran/rent-apartment/ararat?";
     private final String endpoint = "https://api.divar.ir/v1/open-platform/finder/post";
-    //    private String district = "districts=301%2C68%2C943%2C85%2C360%2C91%2C67%2C934%2C86%2C1028%2C1025%2C940%2C71%2C81%2C84%2C75%2C95%2C72%2C300%2C64%2C941%2C70%2C65%2C944%2C96%2C74%2C939%2C315%2C90%2C127&";
-//    private String district = "districts=301%2C68%2C943%2C85%2C360%2C91%2C67%2C934%2C86%2C1028%2C1025%2C940%2C71%2C81%2C84%2C75%2C95%2C72%2C300%2C64%2C941%2C70%2C65%2C944%2C96%2C74%2C939%2C315%2C90%2C127&";
-    private String searchUrl;
-    KeyManager km;
 
     public DivarApartmentScraper() {
     }
 
-    public DivarApartmentScraper(ApartmentFilter filter) throws IOException, InterruptedException {
-//        searchUrl = endpoint;
-        KeyManager km = new KeyManager();
+    public List<DivarApartment.Post> Scrape(ApartmentFilter filter, KeyManager km) throws IOException, InterruptedException {
         String jsonResponse = ApiCall(filter, km);
-//        searchUrl = endpoint + "wZ9MqS7W";
-//        String response = request.get(searchUrl, headers);
         ObjectMapper mapper = new ObjectMapper();
         DivarApartment response = mapper.readValue(jsonResponse, DivarApartment.class);
         List<DivarApartment.Post> posts = response.getPosts();
-        List<DivarApartment.Post> customFilteredPosts = response.getPosts();
+        List<DivarApartment.Post> customFilteredPosts = customFilter1(posts);
 
-//        System.out.println(posts.toString());
         System.out.println(posts.size());
-        /*
-        {
-    "city": "tehran",
-    "category": "apartment-rent",
-    "districts": ["abshar", "nazi-abad","ajoodanieh"],
-    "query": {
-    "parking": true,
-    "size":{
-        "min": 60
-    },
-    "rent": {
-        "min": 1000000,
-        "max": 20000000
-    },
-    "credit": {
-        "min": 1000000,
-        "max": 250000000
+        System.out.println(customFilteredPosts.size());
+        return customFilteredPosts;
     }
-       }
-}
-         */
-        /*
-        searchUrl = endpoint + district +
-                String.format(
-                        "credit=%d-%d&" +
-                                "rent=%d-%d&" +
-                                "size=%d-%d&" +
-                                "rooms=%s&" +
-                                "building-age=%d-%d&" +
-                                "parking=%s",
-                        minCredit, maxCredit,
-                        minRent, maxRent,
-                        minSize, maxSize,
-                        extractRooms(bedrooms),
-                        minAge, maxAge,
-                        parking ? "true" : "");
-        System.out.println(searchUrl);*/
-    }
+
+
 
     private String ApiCall(ApartmentFilter filter, KeyManager km) throws IOException, InterruptedException {
         HTTPRequest request = new HTTPRequest();
@@ -115,11 +54,11 @@ public class DivarApartmentScraper extends Scraper {
         while (retryCount < maxRetries) {
             try {
                 List<Map.Entry<String, String>> headers = getHeaders(km.getKey());
-                System.out.println(km.getKey());
+//                System.out.println(km.getKey());
                 response = request.post(endpoint, headers, jsonPayload);
                 System.out.println("Status Code: " + response.statusCode());
 
-                if (response.statusCode() == 429) {
+                if (response.statusCode() == 429 || response.statusCode() != 200) {
                     retryCount++;
                     System.out.println("Retrying... (" + retryCount + ")");
                     km.moveToNextKey(); // Cycle to the next key
@@ -141,6 +80,17 @@ public class DivarApartmentScraper extends Scraper {
         HttpResponse response = request.post(endpoint, headers, jsonPayload);
         System.out.println(response.statusCode());*/
         return response.body().toString();
+    }
+
+    private List<DivarApartment.Post> customFilter1(List<DivarApartment.Post> posts) {
+        // Define the filter logic
+        Predicate<DivarApartment.Post> filter = post -> {
+            DivarApartment.Post.PostData data = post.getPostData();
+            return data.hasElevator() || data.getFloor() <= 1;
+        };
+        return posts.stream()
+                .filter(filter)
+                .collect(Collectors.toList());
     }
 
     private static List<Map.Entry<String, String>> getHeaders(String key) {
@@ -189,6 +139,7 @@ public class DivarApartmentScraper extends Scraper {
     }
 
     private String extractSearchUrl() {
+        String searchUrl ="sdf";
         return searchUrl;
     }
 

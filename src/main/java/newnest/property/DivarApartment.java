@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 
 import java.util.List;
-import java.util.Map;
 
 public class DivarApartment extends Apartment {
     private List<Post> posts;
@@ -36,6 +35,14 @@ public class DivarApartment extends Apartment {
         @JsonProperty("post_data")
         private PostData postData;
 
+        public PostData getPostData() {
+            return postData;
+        }
+
+        public String getToken() {
+            return token;
+        }
+
         @JsonIgnoreProperties(ignoreUnknown = true)
         public static class PostData {
             @JsonProperty("category")
@@ -62,6 +69,54 @@ public class DivarApartment extends Apartment {
             private Rent rent;
             @JsonProperty("credit")
             private Credit credit;
+
+            public String getCategory() {
+                return category;
+            }
+
+            public String getDescription() {
+                return description;
+            }
+
+            public String getDistrict() {
+                return district;
+            }
+
+            public boolean hasParking() {
+                return parking;
+            }
+
+            public boolean hasElevator() {
+                return elevator;
+            }
+
+            public boolean isRent_credit_transform() {
+                return rent_credit_transform;
+            }
+
+            public int getFloor() {
+                return floor;
+            }
+
+            public int getProductionYear() {
+                return productionYear;
+            }
+
+            public int getSize() {
+                return size;
+            }
+
+            public String getTitle() {
+                return title;
+            }
+
+            public Rent getRent() {
+                return rent;
+            }
+
+            public Credit getCredit() {
+                return credit;
+            }
 
             @Override
             public String toString() {
