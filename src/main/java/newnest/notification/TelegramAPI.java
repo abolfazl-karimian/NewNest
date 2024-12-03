@@ -1,7 +1,9 @@
 package newnest.notification;
 
+import newnest.Main;
 import newnest.property.DivarApartment;
 import newnest.utils.HTTPRequest;
+import newnest.utils.LoggingUtil;
 
 import java.net.URLEncoder;
 import java.net.http.HttpResponse;
@@ -12,8 +14,10 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class TelegramAPI {
+    private static final Logger logger = LoggingUtil.getLogger(Main.class);
     private final String ApiEndpoint = "https://api.telegram.org/bot";
     private String botToken;
     private String chatID;
@@ -34,19 +38,19 @@ public class TelegramAPI {
         try {
             HttpResponse<String> response = request.post(postURI(), getPayload(chatID, message), headers);
             if (response == null) {
-                System.out.println("Error sending Telegram message: Response is null.");
+                logger.severe("Error sending Telegram message: Response is null(It's possible that your server could not connect to telegram server)");
                 return false;
             }
 
             if (response.statusCode() != 200) {
-                System.out.println("Error sending Telegram message");
-                System.out.println("Status Code: " + response.statusCode());
-                System.out.println("Response Body: " + response.body());
+                logger.severe(response.statusCode() + ": " + "Error sending Telegram message - " + response.body());
+
                 return false;
             }
             return true;
         } catch (Exception e) {
-            System.out.println("Exception occurred while sending Telegram message.");
+            logger.severe("Exception occurred while sending Telegram message.");
+
             e.printStackTrace();
             return false;
         }

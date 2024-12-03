@@ -2,16 +2,20 @@ package newnest.scraper;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import newnest.Main;
 import newnest.filters.ApartmentFilter;
 import newnest.property.DivarApartment;
 import newnest.utils.HTTPRequest;
 import newnest.utils.KeyManager;
+import newnest.utils.LoggingUtil;
 
 import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class DivarAPICall {
+    private static final Logger logger = LoggingUtil.getLogger(Main.class);
     HTTPRequest request;
     KeyManager km;
     private final String endpoint = "https://api.divar.ir/v2/open-platform/finder/post";
@@ -47,17 +51,14 @@ public class DivarAPICall {
             try {
                 List<Map.Entry<String, String>> headers = getHeaders(km.getKey());
                 response = request.post(endpoint, jsonPayload, headers);
-                System.out.println("Request have been sent.");
-
-//                System.out.println(jsonPayload);
-//                System.out.println(endpoint);
+                logger.info("Divar APICall call completed.");
 
                 if (response.statusCode() != 200) {
                     retryCount++;
-                    System.out.println(response.statusCode() + " - Retrying... (" + retryCount + ")");
+                    logger.severe("Divar APICall call failed with status code " + response.statusCode() + " - Retrying... (" + retryCount + ")");
                     if (response.statusCode() == 429) {
                         km.moveToNextKey();
-                        System.out.println("Testing next key...");
+                        logger.info("Testing next key...");
                     }
 
                 } else {
@@ -65,7 +66,7 @@ public class DivarAPICall {
                     break;
                 }
             } catch (Exception e) {
-                System.err.println("Error occurred At Divar: " + e.getMessage());
+                logger.severe("Error occurred At Divar: " + e.getMessage());
                 retryCount++;
                 km.moveToNextKey();
             }

@@ -50,19 +50,19 @@
             <version>${shade.version}</version>
         </dependency>
 
-        <!-- https://mvnrepository.com/artifact/org.seleniumhq.selenium/selenium-chrome-driver -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-chrome-driver</artifactId>
             <version>4.25.0</version>
         </dependency>
-        <!-- Lombok Dependency -->
+
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.34</version> <!-- Use the latest version -->
+            <version>1.18.34</version>
             <scope>provided</scope>
         </dependency>
+
     </dependencies>
     <build>
         <plugins>

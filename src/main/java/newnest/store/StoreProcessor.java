@@ -8,7 +8,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class StoreProcessor {
-    private final String filePath = "/opt/test/store.csv";
+    private final String filePath = "/opt/nest/store/store.csv";
 
     // Load apartment IDs from the file
     public Set<String> loadStoredIds() throws IOException {

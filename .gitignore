@@ -13,8 +13,8 @@ test/
 *.iws
 *.iml
 *.ipr
-/src/main/resources/keys
-/src/main/resources/filters
+src/main/resources/keys
+src/main/resources/telegram
 ### Eclipse ###
 .apt_generated
 .classpath

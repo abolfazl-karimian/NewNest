@@ -6,20 +6,25 @@ import newnest.property.DivarApartment;
 import newnest.scraper.DivarApartmentScraper;
 import newnest.store.StoreProcessor;
 import newnest.utils.ConfLoader;
+import newnest.utils.LoggingUtil;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
+import java.util.logging.Logger;
 
 
 public class Main {
-    public static void main(String[] args) throws IOException, InterruptedException {
+    private static final Logger logger = LoggingUtil.getLogger(Main.class);
+    private static int period = 60;
+
+    static {
+        TimeZone.setDefault(TimeZone.getTimeZone("Asia/Tehran"));
+    }
+
+    public static void main(String[] args) throws IOException {
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         StoreProcessor storeProcessor = new StoreProcessor();
 
@@ -30,6 +35,8 @@ public class Main {
 
         scheduler.scheduleAtFixedRate(() -> {
             try {
+                logger.info("New run started.");
+
                 Set<String> storedIds = storeProcessor.loadStoredIds();
 
                 ApartmentFilter filter = new ApartmentFilter(Arrays.asList(cl.get("districts").split(",")),
@@ -40,24 +47,24 @@ public class Main {
                         Boolean.parseBoolean(cl.get("parking")), Boolean.parseBoolean(cl.get("elevator")));
 
                 List<DivarApartment.Post> apartments = new DivarApartmentScraper().Scrape(filter, "api");
-
-                System.out.println(apartments.size() + " filtered in.");
+                logger.info(apartments.size() + " apartments are here to check.");
 
                 List<DivarApartment.Post> newApartments = storeProcessor.filterNewApartments(apartments, storedIds);
-                System.out.println(apartments.size() + " apartments out of " + newApartments.size() + " were new.");
+                logger.info(newApartments.size() + " apartments out of " + apartments.size() + " were new");
 
 
                 for (DivarApartment.Post apartment : newApartments)
                     if (telegramAPI.sendMessage(apartment)) {
                         storeProcessor.addApartmentToStore(apartment);
-                        System.out.println("Posted New Apartment");
+                        logger.info("Posted New Apartment");
                     }
 
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }, 0, 60, TimeUnit.SECONDS);
+            logger.info("Waiting " + period + " seconds...");
+        }, 0, period, TimeUnit.SECONDS);
 
     }
 }

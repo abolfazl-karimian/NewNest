@@ -1,10 +1,12 @@
 package newnest.scraper;
 
+import newnest.Main;
 import newnest.filters.ApartmentFilter;
 import newnest.property.DivarApartment;
 import newnest.property.Apartment;
 import newnest.utils.ConfLoader;
 import newnest.utils.KeyManager;
+import newnest.utils.LoggingUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.select.Elements;
 
@@ -13,9 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class DivarApartmentScraper extends Scraper {
+    private static final Logger logger = LoggingUtil.getLogger(Main.class);
 
     private final String website = "Divar";
 
@@ -34,19 +38,19 @@ public class DivarApartmentScraper extends Scraper {
 
         }
 
-
-        System.out.println(posts.size() + " apartments were found.");
+        logger.info(posts.size() + " apartments were found");
 
         List<DivarApartment.Post> customFilteredPosts = filterBasedOnRooms(posts, filter.getRooms());
-        System.out.println(customFilteredPosts.size() + " apartments were found.");
+        logger.info(customFilteredPosts.size() + " - filterBasedOnRooms");
+
         customFilteredPosts = filterBasedOnRent(customFilteredPosts, filter.getMinRent(), filter.getMaxRent());
-        System.out.println(customFilteredPosts.size() + " apartments were found.");
+        logger.info(customFilteredPosts.size() + " - filterBasedOnRent");
 
         customFilteredPosts = filterBasedOnCredit(customFilteredPosts, filter.getMinCredit(), filter.getMaxCredit());
-        System.out.println(customFilteredPosts.size() + " apartments were found.");
+        logger.info(customFilteredPosts.size() + " - filterBasedOnCredit");
 
         customFilteredPosts = filterBasedOnSize(customFilteredPosts, filter.getMinSize(), filter.getMaxSize());
-        System.out.println(customFilteredPosts.size() + " apartments were found.");
+        logger.info(customFilteredPosts.size() + " - filterBasedOnSize");
 
         customFilteredPosts = filterBasedOnYear(customFilteredPosts, filter.getMinYear());
         if (filter.isParking())
@@ -89,12 +93,12 @@ public class DivarApartmentScraper extends Scraper {
     }
 
     private List<DivarApartment.Post> filterBasedOnCredit(List<DivarApartment.Post> posts, int min, int max) {
-        Predicate<DivarApartment.Post> filter = post -> {
-            DivarApartment.Post.RealEstateFields data = post.getRealEstateFields();
-            return data.getCredit().getValue() >= min && data.getCredit().getValue() <= max;
-        };
         return posts.stream()
-                .filter(filter)
+                .filter(post -> Optional.ofNullable(post.getRealEstateFields())
+                        .map(DivarApartment.Post.RealEstateFields::getCredit)
+                        .map(DivarApartment.Post.RealEstateFields.Credit::getValue)
+                        .filter(creditValue -> creditValue >= min && creditValue <= max)
+                        .isPresent())
                 .collect(Collectors.toList());
     }
 
@@ -131,7 +135,7 @@ public class DivarApartmentScraper extends Scraper {
 
 
     private String extractSearchUrl() {
-        String searchUrl = "sdf";
+        String searchUrl = "";
         return searchUrl;
     }
 
