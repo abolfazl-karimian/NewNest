@@ -16,8 +16,8 @@ test/
 src/main/resources/keys
 src/main/resources/telegram
 confs/keys
-confs/telegram
-confs/filters
+confs/telegram2
+confs/filters2
 ### Eclipse ###
 .apt_generated
 .classpath
