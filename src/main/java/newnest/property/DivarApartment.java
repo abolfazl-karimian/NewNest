@@ -2,208 +2,132 @@ package newnest.property;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+@Data
+@NoArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class DivarApartment extends Apartment {
     private List<Post> posts;
-/*
-    public DivarApartment(int year, int floor, int credit, int rent, int size, int bedroom, boolean elevator, boolean parking, String district) {
-        super(year, floor, credit, rent, size, bedroom, elevator, parking, district);
-    }*/
 
-
-    public List<Post> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
-    }
-
+    @Data
+    @NoArgsConstructor
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class Post {
+        @JsonProperty("category")
+        private String category;
+
         @JsonProperty("business_type")
         private String businessType;
+
         @JsonProperty("city")
         private String city;
-        @JsonProperty("last_modified")
+
+        @JsonProperty("last_modified_at")
         private String lastModified;
+
         @JsonProperty("token")
         private String token;
-        @JsonProperty("post_data")
-        private PostData postData;
 
-        public PostData getPostData() {
-            return postData;
+        @JsonProperty("title")
+        private String title;
+
+        @JsonProperty("real_estate_fields")
+        private RealEstateFields    realEstateFields;
+
+        public String getUrl() {
+            return "https://divar.ir/v/" + getToken();
         }
 
-        public String getToken() {
-            return token;
-        }
-
+        @Data
+        @NoArgsConstructor
         @JsonIgnoreProperties(ignoreUnknown = true)
-        public static class PostData {
-            @JsonProperty("category")
-            private String category;
-            @JsonProperty("description")
-            private String description;
-            @JsonProperty("district")
-            private String district;
-            @JsonProperty("parking")
+        public static class RealEstateFields {
+
+            @JsonProperty("has_parking")
             private boolean parking;
-            @JsonProperty("elevator")
+
+            @JsonProperty("has_elevator")
             private boolean elevator;
-            @JsonProperty("rent_credit_transform")
-            private boolean rent_credit_transform;
+
             @JsonProperty("floor")
             private int floor;
-            @JsonProperty("production-year")
-            private int productionYear;
+
+            @JsonProperty("year")
+            private int year;
+
             @JsonProperty("size")
             private int size;
-            @JsonProperty("title")
-            private String title;
+
+            @JsonProperty("rooms")
+            private String rooms;
+
+            public int getRoomsAsInt() {
+                if (rooms == null) {
+                    return 0; // or throw an exception based on your requirement
+                }
+                switch (rooms.trim()) {
+                    case "یک":
+                        return 1;
+                    case "دو":
+                        return 2;
+                    case "سه":
+                        return 3;
+                    case "چهار":
+                        return 4;
+                    case "پنج":
+                        return 5;
+                    // Add more cases as needed
+                    default:
+                        try {
+                            return Integer.parseInt(rooms);
+                        } catch (NumberFormatException e) {
+                            // Log the exception or handle it as per your need
+                            return 0;
+                        }
+                }
+            }
+
             @JsonProperty("rent")
             private Rent rent;
+
             @JsonProperty("credit")
             private Credit credit;
 
-            public String getCategory() {
-                return category;
-            }
-
-            public String getDescription() {
-                return description;
-            }
-
-            public String getDistrict() {
-                return district;
-            }
-
-            public boolean hasParking() {
-                return parking;
-            }
-
-            public boolean hasElevator() {
-                return elevator;
-            }
-
-            public boolean isRent_credit_transform() {
-                return rent_credit_transform;
-            }
-
-            public int getFloor() {
-                return floor;
-            }
-
-            public int getProductionYear() {
-                return productionYear;
-            }
-
-            public int getSize() {
-                return size;
-            }
-
-            public String getTitle() {
-                return title;
-            }
-
-            public Rent getRent() {
-                return rent;
-            }
-
-            public Credit getCredit() {
-                return credit;
-            }
-
-            @Override
-            public String toString() {
-                return "PostData{" +
-                        "category='" + category + '\'' +
-                        ", description='" + description + '\'' +
-                        ", district='" + district + '\'' +
-                        ", parking=" + parking +
-                        ", elevator=" + elevator +
-                        ", rent_credit_transform=" + rent_credit_transform +
-                        ", floor=" + floor +
-                        ", productionYear=" + productionYear +
-                        ", size=" + size +
-                        ", title='" + title + '\'' +
-                        ", rent=" + rent.toString() +
-                        ", credit=" + credit.toString() +
-                        '}';
-            }
-
+            @Data
+            @NoArgsConstructor
             @JsonIgnoreProperties(ignoreUnknown = true)
             public static class Rent {
+                @JsonProperty("mode")
                 private String mode;
-                private int value;
 
-                // Getters and setters...
-                public String getMode() {
-                    return mode;
-                }
-
-                public void setMode(String mode) {
-                    this.mode = mode;
-                }
-
-                public int getValue() {
-                    return value;
-                }
-
-                public void setValue(int value) {
-                    this.value = value;
-                }
+                @JsonProperty("value")
+                private Long value; // Nullable
 
                 @Override
                 public String toString() {
-                    return "" + value;
+                    return value != null ? value.toString() : "null";
                 }
             }
 
-
+            @Data
+            @NoArgsConstructor
             @JsonIgnoreProperties(ignoreUnknown = true)
             public static class Credit {
+                @JsonProperty("mode")
                 private String mode;
-                private int value;
 
-                // Getters and setters...
-                public String getMode() {
-                    return mode;
-                }
-
-                public void setMode(String mode) {
-                    this.mode = mode;
-                }
-
-                public int getValue() {
-                    return value;
-                }
-
-                public void setValue(int value) {
-                    this.value = value;
-                }
+                @JsonProperty("value")
+                private Long value; // Nullable
 
                 @Override
                 public String toString() {
-                    return "" + value;
+                    return value != null ? value.toString() : "null";
                 }
             }
-        }
-
-        @Override
-        public String toString() {
-            return "Post{" +
-                    "businessType='" + businessType + '\'' +
-                    ", city='" + city + '\'' +
-                    ", lastModified='" + lastModified + '\'' +
-                    ", token='" + token + '\'' +
-                    ", postData=" + postData +
-                    '}';
         }
     }
 }
-

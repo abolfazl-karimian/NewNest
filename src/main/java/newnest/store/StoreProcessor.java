@@ -41,12 +41,19 @@ public class StoreProcessor {
     // Save new apartment IDs to the file
     public void updateStoredApartments(List<DivarApartment.Post> acceptedApartments) throws IOException, URISyntaxException {
         File file = new File(filePath);
-
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
             for (DivarApartment.Post ap : acceptedApartments) {
                 writer.write(ap.getToken());
                 writer.newLine();
             }
+        }
+    }
+
+    public void addApartmentToStore(DivarApartment.Post apartment) throws IOException, URISyntaxException {
+        File file = new File(filePath);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file, true))) {
+                writer.write(apartment.getToken());
+                writer.newLine();
         }
     }
 

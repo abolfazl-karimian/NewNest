@@ -3,16 +3,15 @@ package newnest.utils;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class KeyManager {
     private final List<String> apiKeys;
     private int currentIndex;
 
-    public KeyManager(String path) throws IOException {
-        ConfLoader keys = new ConfLoader(path);
-        this.apiKeys = new ArrayList<>(keys.getConfs().values());
+    public KeyManager(Map<String, String> keyConf) throws IOException {
+        this.apiKeys = new ArrayList<>(keyConf.values());
         System.out.println("Loaded " + apiKeys.size() + " API keys");
-        apiKeys.add("key3");
         this.currentIndex = 0;
     }
 
