@@ -24,7 +24,10 @@ RUN mkdir -p /opt/nest/store/
 RUN mkdir -p /opt/nest/logs/
 
 # Copy only the built JAR file from the builder stage
-COPY --from=builder /app/target/NewNest.jar /opt/NewNest.jar
+COPY --from=builder /app/target/NewNest-1.0-SNAPSHOT.jar /opt/NewNest.jar
 
 # Command to run the application
 CMD ["java", "-jar", "NewNest.jar"]
+
+#docker build -t newnest-app  .
+#docker run --name newnest-app -v ./store-volume:/opt/nest/store -d newnest-app

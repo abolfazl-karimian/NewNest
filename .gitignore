@@ -15,6 +15,9 @@ test/
 *.ipr
 src/main/resources/keys
 src/main/resources/telegram
+confs/keys
+confs/telegram
+confs/filters
 ### Eclipse ###
 .apt_generated
 .classpath
