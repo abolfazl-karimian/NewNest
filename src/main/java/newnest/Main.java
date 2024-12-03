@@ -18,7 +18,7 @@ import java.util.logging.Logger;
 
 public class Main {
     private static final Logger logger = LoggingUtil.getLogger(Main.class);
-    private static int period = 60;
+    private static final int period = 300;
 
     static {
         TimeZone.setDefault(TimeZone.getTimeZone("Asia/Tehran"));
